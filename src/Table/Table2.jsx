@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
+import TotalAmount from './TotalAmount'; // Import the TotalAmount component
 
-export default function Table2() {
-    const [columns, setColumns] = useState([]); // Stores dynamic columns
-    const [array, setArray] = useState([]); // Stores table rows
-    const [inputdata, setInputdata] = useState({}); // Stores input form data
-    const [index, setIndex] = useState(null); // Stores index of the row being updated
-    const [bolin, setBolin] = useState(false); // Determines add/update mode
-    const [newColumn, setNewColumn] = useState(""); // Stores new column name
+export default function Table() {
+    const [columns, setColumns] = useState([]); // Dynamic columns
+    const [array, setArray] = useState([]); // Table rows
+    const [inputdata, setInputdata] = useState({}); // Form input
+    const [index, setIndex] = useState(null); // Index for update
+    const [bolin, setBolin] = useState(false); // Mode: add/update
+    const [newColumn, setNewColumn] = useState(""); // New column name
 
-    // Handles input changes dynamically
+    // Handle input changes
     function handleInputChange(e) {
         setInputdata({ ...inputdata, [e.target.name]: e.target.value });
     }
 
-    // Adds a new column dynamically
+    // Add new column dynamically
     function addColumn() {
         if (newColumn.trim() !== "" && !columns.includes(newColumn)) {
             setColumns([...columns, newColumn]);
-            setInputdata({ ...inputdata, [newColumn]: "" }); // Add new field to input data
+            setInputdata({ ...inputdata, [newColumn]: "" });
         }
-        setNewColumn(""); // Clear input
+        setNewColumn("");
     }
 
-    // Adds a new row to the table
+    // Add a new row
     function addRow() {
         if (columns.length === 0) {
             alert("Please add at least one column first.");
@@ -36,21 +37,21 @@ export default function Table2() {
         }
     }
 
-    // Deletes a row from the table
+    // Delete row
     function deleteRow(i) {
         let updatedArray = [...array];
         updatedArray.splice(i, 1);
         setArray(updatedArray);
     }
 
-    // Loads data into the input fields for updating
+    // Load update data
     function loadUpdateData(i) {
         setInputdata({ ...array[i] });
         setBolin(true);
         setIndex(i);
     }
 
-    // Updates the existing row in the table
+    // Update row
     function updateRow() {
         let updatedArray = [...array];
         updatedArray[index] = { ...inputdata };
@@ -59,11 +60,9 @@ export default function Table2() {
         setInputdata(Object.fromEntries(columns.map(col => [col, ""])));
     }
 
-   
-
     return (
         <div>
-            {/* Input & Button to Add New Columns */}
+            {/* Input & Button to Add Columns */}
             <input
                 type="text"
                 value={newColumn}
@@ -74,7 +73,7 @@ export default function Table2() {
 
             <br />
 
-            {/* Input fields based on dynamic columns */}
+            {/* Dynamic Input Fields */}
             {columns.map((col, i) => (
                 <input
                     key={i}
@@ -87,7 +86,7 @@ export default function Table2() {
                 />
             ))}
 
-            {/* Button for Adding or Updating Data */}
+            {/* Add / Update Button */}
             <button onClick={!bolin ? addRow : updateRow}>
                 {!bolin ? "Add Row" : "Update Row"}
             </button>
@@ -113,6 +112,9 @@ export default function Table2() {
                     ))}
                 </tbody>
             </table>
+
+            {/* Display Total Amount */}
+            <TotalAmount array={array} columns={columns} />
         </div>
     );
 }
