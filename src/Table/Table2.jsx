@@ -1,91 +1,118 @@
 import React, { useState } from 'react';
 
 export default function Table2() {
-    let [array, setArray] = useState([]);
-    let [inputdata, setInputdata] = useState({ name: "", number: "" });
-    let [index, setIndex] = useState();
-    let [bolin, setBolin] = useState(false);
-    let { name, number } = inputdata;
+    const [columns, setColumns] = useState([]); // Stores dynamic columns
+    const [array, setArray] = useState([]); // Stores table rows
+    const [inputdata, setInputdata] = useState({}); // Stores input form data
+    const [index, setIndex] = useState(null); // Stores index of the row being updated
+    const [bolin, setBolin] = useState(false); // Determines add/update mode
+    const [newColumn, setNewColumn] = useState(""); // Stores new column name
 
-    function data(e) {
+    // Handles input changes dynamically
+    function handleInputChange(e) {
         setInputdata({ ...inputdata, [e.target.name]: e.target.value });
     }
 
-    function addinputdata() {
-        if (name === "" || number === "") {
-            alert("Enter Name and Number");
+    // Adds a new column dynamically
+    function addColumn() {
+        if (newColumn.trim() !== "" && !columns.includes(newColumn)) {
+            setColumns([...columns, newColumn]);
+            setInputdata({ ...inputdata, [newColumn]: "" }); // Add new field to input data
+        }
+        setNewColumn(""); // Clear input
+    }
+
+    // Adds a new row to the table
+    function addRow() {
+        if (columns.length === 0) {
+            alert("Please add at least one column first.");
+            return;
+        }
+        if (Object.values(inputdata).some(val => val === "")) {
+            alert("Please fill all fields");
         } else {
-            setArray([...array, { name, number: Number(number) }]);
-            setInputdata({ name: "", number: "" });
+            setArray([...array, { ...inputdata }]);
+            setInputdata(Object.fromEntries(columns.map(col => [col, ""])));
         }
     }
 
-    function deletedata(i) {
-        let total = [...array];
-        total.splice(i, 1);
-        setArray(total);
+    // Deletes a row from the table
+    function deleteRow(i) {
+        let updatedArray = [...array];
+        updatedArray.splice(i, 1);
+        setArray(updatedArray);
     }
 
-    function updatedata(i) {
-        let { name, number } = array[i];
-        setInputdata({ name, number });
+    // Loads data into the input fields for updating
+    function loadUpdateData(i) {
+        setInputdata({ ...array[i] });
         setBolin(true);
         setIndex(i);
     }
 
-    function updateinfo() {
-        let total = [...array];
-        total.splice(index, 1, { name, number: Number(number) });
-        setArray(total);
+    // Updates the existing row in the table
+    function updateRow() {
+        let updatedArray = [...array];
+        updatedArray[index] = { ...inputdata };
+        setArray(updatedArray);
         setBolin(false);
-        setInputdata({ name: "", number: "" });
+        setInputdata(Object.fromEntries(columns.map(col => [col, ""])));
     }
 
-    const totalSum = array.reduce((sum, item) => sum + item.number, 0);
+   
 
     return (
         <div>
-            <input type="text" value={inputdata.name || ""} name='name' autoComplete='off' placeholder='Enter Name' onChange={data} />
-            <input type="number" value={inputdata.number || ""} name="number" placeholder='Enter Number' onChange={data} />
-            <button onClick={!bolin ? addinputdata : updateinfo}>{!bolin ? `Add data` : `Update data`}</button>
+            {/* Input & Button to Add New Columns */}
+            <input
+                type="text"
+                value={newColumn}
+                placeholder="Enter column name"
+                onChange={(e) => setNewColumn(e.target.value)}
+            />
+            <button onClick={addColumn}>Add Column</button>
 
             <br />
 
+            {/* Input fields based on dynamic columns */}
+            {columns.map((col, i) => (
+                <input
+                    key={i}
+                    type="text"
+                    value={inputdata[col] || ""}
+                    name={col}
+                    autoComplete="off"
+                    placeholder={`Enter ${col}`}
+                    onChange={handleInputChange}
+                />
+            ))}
+
+            {/* Button for Adding or Updating Data */}
+            <button onClick={!bolin ? addRow : updateRow}>
+                {!bolin ? "Add Row" : "Update Row"}
+            </button>
+
+            {/* Table Display */}
             <table border="1">
-                <tbody>
+                <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Number</th>
+                        {columns.map((col, i) => <th key={i}>{col}</th>)}
                         <th>Update</th>
                         <th>Delete</th>
                     </tr>
-                {
-
-array && array.map(
-(item,i)=>{
-    return(
-        <tr key={i}>
-            <td>{item.name}</td>
-            <td>{item.number}</td>
-            <td><button onClick={()=>updatedata(i)}>update</button></td>
-            <td><button onClick={()=>deletedata(i)}>Delete</button></td>
-        </tr>
-    )
-}
-)
-
-                }
-
-
-
-
-
-
-
+                </thead>
+                <tbody>
+                    {array.map((row, i) => (
+                        <tr key={i}>
+                            {columns.map((col, j) => (
+                                <td key={j}>{row[col]}</td>
+                            ))}
+                            <td><button onClick={() => loadUpdateData(i)}>Update</button></td>
+                            <td><button onClick={() => deleteRow(i)}>Delete</button></td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
-            
-            <h3>Total: {totalSum}</h3>
         </div>
     );
 }
