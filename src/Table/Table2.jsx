@@ -90,14 +90,7 @@ array && array.map(
 )
 
                 }
-
-
-
-
-
-
-
-                </tbody>
+  </tbody>
             </table>
 
     </div>
