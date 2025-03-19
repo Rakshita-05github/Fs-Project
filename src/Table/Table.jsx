@@ -1,67 +1,102 @@
-import React from 'react'
-import './Table.css'
-import { useState } from 'react';
+import React, { useState } from "react";
+import "./Table.css";
 
-export default function Table(){
+export default function Table() {
+    let [array, setArray] = useState([]); // Empty array to store data
+    let [boolin, setBoolin] = useState(false); // State to track if updating or adding
+    let [index, setIndex] = useState(); // Stores the index of row being updated
+    let [inputdata, setInputdata] = useState({ name: "", number: "" }); // Stores input data
+    let { name, number } = inputdata; // Destructuring for easier access
 
-    let [array,setArray]=useState([]) //Empty array is initialized first
-    let [boolin, setBoolin] = useState(false); //boolin is declared as false at first
-    let[index,setIndex]=useState();
-   let [inputdata, setInputdata] = useState({ name: "", number: "" });
-   let { name, number } = inputdata; //array destructuring { name, number }: Extracts values from input data for easy access.
-    
-    function handledatas(e){
+    function handledatas(e) {
         setInputdata({
             ...inputdata,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         });
     }
 
+    // Insert Data
+    function addinfo() {
+        if (name === "" || number === "") {
+            alert("Enter Name and Roll no");
+        } else {
+            setArray([...array, { name, number }]);
+            setInputdata({ name: "", number: "" }); // Clear input fields
+        }
+    }
 
+    // Delete Data
+    function delfunc(i) {
+        let total = [...array];
+        total.splice(i, 1); // Remove one element at index `i`
+        setArray(total);
+    }
 
+    // Load Data into Input Fields for Updating
+    function update(i) {
+        let { name, number } = array[i]; // Get data at selected index
+        setInputdata({ name, number });
+        setBoolin(true);
+        setIndex(i);
+    }
 
-    return(
+    // Update Data at Specific Index
+    function updateinfo() {
+        let total = [...array];
+        total.splice(index, 1, { name, number }); // Replace with new data
+        setArray(total);
+        setBoolin(false); // Reset button to "Add data"
+        setInputdata({ name: "", number: "" }); // Clear input fields
+    }
+    //startIndex → The index where changes should begin.
+// deleteCount → The number of elements to remove.
+// itemToAdd (optional) → The new item to insert at startIndex.
+
+    return (
         <>
-        
-        <input type ="text" name='name'  autoComplete='off' placeholder='Enter Name' /> 
-        <input type="number" name='number' autoComplete='off' placeholder='Enter Number'  />
-{/* onChange={data} */}
+            <input
+                type="text"
+                name="name"
+                autoComplete="off"
+                placeholder="Enter Name"
+                onChange={handledatas}
+                value={name}
+            />
+            <input
+                type="number"
+                name="number"
+                autoComplete="off"
+                placeholder="Enter Number"
+                onChange={handledatas}
+                value={number}
+            />
+            <button onClick={boolin ? updateinfo : addinfo}>
+                {boolin ? `Update data` : `Add data`}
+            </button>
 
+            {/* CREATE TABLE */}
+            <table border="1">
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <th>Number</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                    </tr>
 
-        <button onClick={boolin? update:addinfo}>
-            {boolin?`Update data`:`Add data`}
-
-            {/* Change the button value accordingly for update or add */}
-        </button>
-
-{/* CREATE TABLE */}
-
-<table border="1">
-            <tbody>
-                <tr>
-                    <th>Name</th>
-                    <th>Number</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-
-{array.map((item,i)=>{
-
-    <tr key={i}>
-        <td>{item.name}</td>
-        <td>{item.number}</td>
-        <td><button onClick={()=>update(i)}>Update</button></td>
-        <td><button onClick={()=>delfunc(i)}>Delete</button></td>
-    </tr>
-})}
-
-{/* Iterates over array and displays each row. */}
-
-
-
-
-</tbody>
-</table>
+                    {array.map((item, i) => (
+                        <tr key={i}>
+                            <td>{item.name}</td>
+                            <td>{item.number}</td>
+                            <td><button onClick={() => update(i)}>Update</button></td>
+                            <td><button onClick={() => delfunc(i)}>Delete</button></td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </>
     );
 }
+
+
+// In React, the onChange event is used to update the component's state whenever the user types in an input field. Without it, React would not know what the user is entering, and the values would not be stored.
