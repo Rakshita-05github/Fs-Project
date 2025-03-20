@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TotalAmount from './TotalAmount'; // Import the TotalAmount component
 
-export default function Table() {
+export default function Table2() {
     const [columns, setColumns] = useState([]); // Dynamic columns
     const [array, setArray] = useState([]); // Table rows
     const [inputdata, setInputdata] = useState({}); // Form input
