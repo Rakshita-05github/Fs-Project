@@ -59,6 +59,7 @@ export default function Table() {
                 name="name"
                 autoComplete="off"
                 placeholder="Enter Name"
+                 className="column-input"
                 onChange={handledatas}
                 value={name}
             />
@@ -70,9 +71,9 @@ export default function Table() {
                 onChange={handledatas}
                 value={number}
             />
-            <button onClick={boolin ? updateinfo : addinfo}>
-                {boolin ? `Update data` : `Add data`}
-            </button>
+           <button className="add-btn" onClick={boolin ? updateinfo : addinfo}>
+  {boolin ? `Update data` : `Add data`}
+</button>
 
             {/* CREATE TABLE */}
             <table border="1">
